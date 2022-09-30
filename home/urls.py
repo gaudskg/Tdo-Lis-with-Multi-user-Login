@@ -1,8 +1,8 @@
 from django.urls import path,include
 from django.http import HttpResponse
 from django.shortcuts import render
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',include('home.urls'))
+    path('',views.home, name='home')
 ]
