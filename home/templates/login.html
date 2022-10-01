@@ -8,8 +8,8 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-    <title>Sign UP</title>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+    <title>Sign IN</title>
 </head>
 
 <body>
@@ -44,8 +44,10 @@
                                         <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                                             <button type="submit" class="btn btn-success btn-lg">Login</button>
                                         </div>
-
+                                        
                                     </form>
+                                    <a href="{% url 'sign_up' %}" class="link-success position-relative">Don't Have a Account, Signup</a>
+
 
                                 </div>
                                 <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
@@ -63,6 +65,12 @@
     <!-- SIGNUP FORM END -->
 
     <!-- SWEET ALERT CDN -->
+
+    <script src="sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-s/2.4.1/core.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="sweetalert2.all.min.js"></script>
+
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- SCRIPT FOR ALERT IF PASSWORD OR USER NAME IS WRONG WHILE LOGGING -->
     <script>
@@ -71,9 +79,21 @@
         icon: 'error',
         title: 'Oops...',
         text: '{{ error_msg }}'
+        })
         {% endif %}
-})
-    </script>
+    
+
+    <!-- SUCCESS MESSAGE -->
+    {% if success_msg %}
+        Swal.fire({
+        icon: 'success',
+        title: 'Hooray...',
+        text: '{{ success_msg }}'
+    })
+    {% endif %}
+        
+    <!-- SUCCESS MESSAGE END -->
+</script>
     <!-- SCRIPT END FOR LOGGING MESSAGE -->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
