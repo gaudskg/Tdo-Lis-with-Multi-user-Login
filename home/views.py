@@ -1,24 +1,20 @@
 from django.shortcuts import redirect, render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.csrf import csrf_exempt
+from . models import Todo_task
 # Create your views here.
 def home(request):
-    if request.method == 'POST':
-        email = request.POST['user_email']
-        password = request.POST['user_password']
-        print(email,password,"***********************************")
-        user = authenticate(username=email, password=password)
-        if user is not None:
-            login(request,user)
-            return redirect('/')
-        else:
-            context = { 'error_msg': "Please enter the correct username or password" }
-            return render(request,'login.html',context)
-    return render(request,'home.html')
-
+    if request.user.is_authenticated:
+        obj = Todo_task.objects.all().filter(user = request.user)
+        context = {'task' : obj, 'msg' : 'LOGGED IN SUCCESSFULLY', 'icon' : 'success', 'title' : 'hooray....'}
+        print("USER AUTHENTIC********************************")
+        return render(request,'home.html',context)
+    else:
+        return redirect('/sign-in')
+        
 def register(request):
     if request.user.is_authenticated:
         return redirect('/')
@@ -30,13 +26,13 @@ def signin(request):
         email = request.POST['user_email']
         password = request.POST['user_password']
         print(email,password,"***********************************")
-        user = authenticate(email=email, password=password)
+        user = authenticate(username=email, password=password)
         if user is not None:
             login(request,user)
             return redirect('/')
         else:
             context = { 'error_msg': "Please enter the correct username or password" }
-            return redirect('/sign-in',context)
+            return render(request,'login.html',context)
     return render(request,'login.html')
 
 def signup(request):
@@ -65,3 +61,35 @@ def signup(request):
 def signout(request):
     logout(request)
     return redirect('/sign-in')
+
+def add_tasks(request):
+    if request.method == 'POST':
+        title = request.POST['title']
+        user = Todo_task(user = request.user, title = title)
+        user.save()
+        return redirect('/')
+    else:
+        return redirect('/')
+
+@csrf_exempt
+def delete_data(request):
+    if request.method == 'POST':
+        task_id = request.POST['task_id']
+        task = Todo_task.objects.get(id=task_id)
+        task.delete()
+        print(task_id)
+        return JsonResponse({'task_id':task_id})
+    return redirect('/')
+
+@csrf_exempt
+def change_status(request):
+    if request.method == 'POST': 
+        task_id = request.POST['task_id']
+        user = Todo_task.objects.get(id=task_id)
+        current = user.complete
+        user.complete = not current
+        user.save()
+        print(task_id)
+        return JsonResponse({'status':"ok"})
+    else:
+        return redirect('/')
